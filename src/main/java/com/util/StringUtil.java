@@ -1,4 +1,5 @@
-package util;
+package com.util;
+
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -111,7 +112,7 @@ public class StringUtil {
      * 将"1:xxx,2:ppp,3:ddd"这样的定义转换为“KEY-VALUE”的列表
      */
     public static Map<String, String> split2Map( String src ) {
-        Map<String, String> m = new HashMap<>();
+        Map<String, String> m = new HashMap<String,String>();
         if ( src == null ) return m;
         for ( String o : src.split( "," ) ) {
             if ( isBlank( o ) ) continue;

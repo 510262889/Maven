@@ -1,4 +1,5 @@
-package util;
+package com.util;
+
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.module.hibernate.HibernateModule;
 
 
 /**
- * Json¹¤¾ßÀà
+ * Jsonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 public class JsonUtil {
     private static final ObjectMapper objectMapper;
@@ -35,11 +36,11 @@ public class JsonUtil {
         objectMapper.disable( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES );
         objectMapper.disable( DeserializationConfig.Feature.FAIL_ON_NULL_FOR_PRIMITIVES );
         objectMapper.setDateFormat( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) );
-        // ÅäÖÃÈÕÆÚ¸ñÊ½×Ô¶¨ÒåµÄ·´ÐòÁÐ»¯·½·¨
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½Ê½ï¿½Ô¶ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½
         SimpleModule dateModule = new SimpleModule( "myCustomerDateModule", new Version( 1, 0, 0, null ) );
         dateModule.addDeserializer( Date.class, new CustomDeSerializer( Date.class ) );
         objectMapper.registerModule( dateModule );
-        // ÅäÖÃhibernateÐòÁÐºÅÖ§³Ö
+        // ï¿½ï¿½ï¿½ï¿½hibernateï¿½ï¿½ï¿½Ðºï¿½Ö§ï¿½ï¿½
         HibernateModule module = new HibernateModule();
         module.configure( HibernateModule.Feature.FORCE_LAZY_LOADING, false );
         objectMapper.registerModule( module );
@@ -73,7 +74,7 @@ public class JsonUtil {
     }
 
     /**
-     * ½«¶ÔÏó×ªÎªjson×Ö·û´®
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªÎªjsonï¿½Ö·ï¿½ï¿½ï¿½
      */
     public static String toJson( Object obj ) {
         try {
@@ -84,7 +85,7 @@ public class JsonUtil {
     }
 
     /**
-     * ½âÎöjson×Ö·û´®Îª¶ÔÏó
+     * ï¿½ï¿½ï¿½ï¿½jsonï¿½Ö·ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
      */
     public static <T> T parseJson( String text, Class<T> type ) {
         try {

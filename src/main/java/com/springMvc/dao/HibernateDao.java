@@ -1,4 +1,5 @@
-package dao;
+package com.springMvc.dao;
+
 
 import java.util.List;
 

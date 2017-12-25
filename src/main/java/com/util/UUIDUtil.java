@@ -1,14 +1,15 @@
-package util;
+package com.util;
+
 
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * UUID¹¤¾ßÀà
+ * UUIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 public class UUIDUtil {
-    /** Éú³ÉUUID */
+    /** ï¿½ï¿½ï¿½ï¿½UUID */
     public static synchronized String generate() {
         String rawUuid = UUID.randomUUID().toString().toLowerCase();
         Pattern p = Pattern.compile( "[^\\w]", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE );

@@ -1,13 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-           version="3.0">
-
-    <!--welcome pages-->
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
-
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+	<display-name>JAVA_WEB</display-name>
+	<welcome-file-list>
+	  <welcome-file>/WEB-INF/index.jsp</welcome-file>
+	</welcome-file-list>
+	
+	<listener>  
+	  <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
+	</listener>  
+	
+	<!-- a2设置Spring容器加载配置文件路径 -->  
+	<context-param>  
+	    <param-name>contextConfigLocation</param-name>  
+	    <param-value>classpath:applicationContext.xml</param-value>  
+	</context-param>  
+	  
+	<!-- b1配置Spring核心控制器 DispatcherServlet -->  
+	<servlet>  
+	    <servlet-name>dispatcher</servlet-name>  
+	    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>  
+	    <!-- b2设置控制器加载配置文件路径 -->  
+		<init-param>  
+		    <param-name>contextConfigLocation</param-name>  
+		    <param-value>classpath:servlet-context.xml</param-value>  
+		</init-param>  
+	
+		<!-- b3启动顺序，让这个Servlet随Servlet容器一起启动。 -->  
+	    <load-on-startup>1</load-on-startup>  
+	</servlet>  
+	
+	<!-- b3拦截所有.action请求 -->  
+	<servlet-mapping>  
+	    <servlet-name>dispatcher</servlet-name>  
+	    <url-pattern>*.action</url-pattern>  
+	</servlet-mapping>  
+	
+	<!-- c1设定编码格式 -->  
+	<filter>  
+	    <filter-name>characterEncoding</filter-name>  
+	    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>  
+	    <init-param>  
+	        <param-name>encoding</param-name>  
+	        <param-value>UTF-8</param-value>  
+	    </init-param>  
+	</filter>  
+	
+	<!-- c2设定编码格式范围 -->  
+	<filter-mapping>  
+	    <filter-name>characterEncoding</filter-name>  
+	    <url-pattern>/*</url-pattern>  
+	</filter-mapping> 
+	
+	<filter>  
+        <filter-name>openSessionInViewFilter</filter-name>  
+        <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>  
+        <init-param>  
+            <param-name>sessionFactoryBeanName</param-name>  
+            <param-value>sessionFactory</param-value>  
+        </init-param>  
+    </filter>  
+    
+    <filter-mapping>  
+        <filter-name>openSessionInViewFilter</filter-name> 
+        <url-pattern>/*</url-pattern>  
+    </filter-mapping>  
+    
+    <!-- 核心拦截器 -->
+    <filter>  
+        <filter-name>CoreFilter</filter-name>  
+        <filter-class>com.filter.CoreFilter</filter-class>  
+    </filter>  
+    
+    <filter-mapping>  
+        <filter-name>CoreFilter</filter-name>  
+        <url-pattern>/*</url-pattern>  
+    </filter-mapping>  
 </web-app>

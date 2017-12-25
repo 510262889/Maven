@@ -12,6 +12,11 @@
 	<name>Maven</name>
 	<url>http://maven.apache.org</url>
 	
+
+	 <properties>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+	
 	<dependencies>
 	    <dependency>
 	        <groupId>junit</groupId>
@@ -187,7 +192,12 @@
 		    <version>2.3.16.2</version>
 		</dependency>
 		
-
+		<dependency>
+		    <groupId>com.oracle</groupId>
+		    <artifactId>classes12</artifactId>
+		    <version>10.2.0.1.0</version>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>
@@ -205,11 +215,13 @@
 	            <directory>${basedir}/src/main/resources</directory>
 	        </resource>
 	    </resources>
+	    
+	    <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
 	    <plugins>
 	        <plugin>
 	            <groupId>org.eclipse.jetty</groupId>
-	            <artifactId>jetty-maven-plugin</artifactId>
-	            <version>9.3.10.v20160621</version>
+			    <artifactId>jetty-maven-plugin</artifactId>
+			    <version>9.2.22.v20170606</version>
 	        </plugin>
 	    </plugins>
 	</build>
