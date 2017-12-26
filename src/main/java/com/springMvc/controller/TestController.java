@@ -22,7 +22,7 @@ public class TestController {
 	@RequestMapping(value = "/test.action")  
 	public ModelAndView test( HttpServletRequest request , HttpServletResponse response  ){
 		hibernateDao.selectAll();
-		ModelAndView modelAndView = new ModelAndView("index.jsp");
+		ModelAndView modelAndView = new ModelAndView("login.jsp");
 		return modelAndView;
 	}
 }

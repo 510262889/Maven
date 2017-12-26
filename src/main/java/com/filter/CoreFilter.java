@@ -29,6 +29,9 @@ public class CoreFilter implements Filter {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
+		String currentUrl = request.getRequestURI();
+		String contextPath = request.getContextPath();
+		if( currentUrl.equals( contextPath + "/" ) ) response.sendRedirect( request.getContextPath() + "/test/test.action" );
 		chain.doFilter( request , response);
 	}
 
