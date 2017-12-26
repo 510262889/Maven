@@ -18,11 +18,10 @@ public class HibernateDao {
         return this.sessionFactory.getCurrentSession();  
     }
 	
-	public void selectAll(){
+	public List selectAll(){
 		SQLQuery query = getCurrentSession().createSQLQuery("SELECT * FROM WM_SYSTEM");
 		query.addEntity( com.springMvc.bean.System.class );
 		List list = query.list();
-		
-		System.out.println(list.size());
+		return list;
 	}
 }

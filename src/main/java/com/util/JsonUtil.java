@@ -1,6 +1,5 @@
 package com.util;
 
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -21,11 +20,9 @@ import org.codehaus.jackson.map.ser.StdSerializerProvider;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.exception.MyExpection;
-import com.fasterxml.jackson.module.hibernate.HibernateModule;
-
 
 /**
- * Json������
+ * Json工具类
  */
 public class JsonUtil {
     private static final ObjectMapper objectMapper;
@@ -36,14 +33,11 @@ public class JsonUtil {
         objectMapper.disable( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES );
         objectMapper.disable( DeserializationConfig.Feature.FAIL_ON_NULL_FOR_PRIMITIVES );
         objectMapper.setDateFormat( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) );
-        // �������ڸ�ʽ�Զ���ķ����л�����
+        // 配置日期格式自定义的反序列化方法 
         SimpleModule dateModule = new SimpleModule( "myCustomerDateModule", new Version( 1, 0, 0, null ) );
         dateModule.addDeserializer( Date.class, new CustomDeSerializer( Date.class ) );
         objectMapper.registerModule( dateModule );
-        // ����hibernate���к�֧��
-        HibernateModule module = new HibernateModule();
-        module.configure( HibernateModule.Feature.FORCE_LAZY_LOADING, false );
-        objectMapper.registerModule( module );
+       
     }
 
     private static class CustomDeSerializer extends StdDeserializer<Date> {
@@ -74,24 +68,24 @@ public class JsonUtil {
     }
 
     /**
-     * ������תΪjson�ַ���
+     * 将对象转为json字符串
      */
     public static String toJson( Object obj ) {
         try {
             return objectMapper.writeValueAsString( obj );
         } catch ( Exception e ) {
-        	throw new MyExpection(e);
+            throw new MyExpection( e );
         }
     }
 
     /**
-     * ����json�ַ���Ϊ����
+     * 解析json字符串为对象
      */
     public static <T> T parseJson( String text, Class<T> type ) {
         try {
             return objectMapper.readValue( text, type );
         } catch ( Exception e ) {
-        	throw new MyExpection(e);
+            throw new MyExpection( e );
         }
     }
 
@@ -104,7 +98,7 @@ public class JsonUtil {
         try {
             return objectMapper.readValue( text, type );
         } catch ( Exception e ) {
-        	throw new MyExpection(e);
+            throw new MyExpection( e );
         }
     }
 
