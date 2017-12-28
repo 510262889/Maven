@@ -1,7 +1,6 @@
 package com.filter;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,14 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.PropertyConfigurator;
-
-
 public class CoreFilter implements Filter {
-
-	private static Log log = LogFactory.getLog( CoreFilter.class );
 	
 	public void destroy() {
 		
@@ -43,7 +35,7 @@ public class CoreFilter implements Filter {
 	private void initPath( FilterConfig config ){
 		ServletContext context = config.getServletContext();
 		String app_path = context.getContextPath();
-		String res_path = app_path + "/views";
+		String res_path = app_path + "/static";
 		String css_path = res_path + "/css";
 		String js_path = res_path + "/js";
 		context.setAttribute( "APP_PATH" , app_path);

@@ -35,7 +35,7 @@
 		<beans:bean class="com.filter.SpringInterceptor"></beans:bean>
 	    <mvc:interceptor>  
 	        <mvc:mapping path="*.action"/>  
-	        <beans:bean class="com.filter.SpringInterceptor"></beans:bean>
+	        <beans:bean class="com.interceptor.SpringInterceptor"></beans:bean>
 	    </mvc:interceptor>  
 	</mvc:interceptors>   
 </beans:beans>  
