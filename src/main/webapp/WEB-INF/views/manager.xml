@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page title="manager">
+	<!-- 
+		data-source：数据源字段
+		col-names:列名
+		col-fields:列字段
+	-->
+	<listmodel data-source="data" col-names="col-names" col-fields="col-fields" >
+		<toolbar>
+			<leftbutton value="左侧按钮1" onclick="test()"/>
+			<leftbutton value="左侧按钮2"/>
+			<rightbutton value="右侧按钮1"/>
+		</toolbar>
+		<querypanel>
+			<row>
+				<input type="text" label="测试1"/>
+				<input type="password" label="测试2"/>
+			</row>
+			<row>
+				<input type="text" label="测试3"/>
+				<input type="password" label="测试4"/>
+			</row>
+		</querypanel>
+	</listmodel>
+	
+	<static>
+		<link rel="stylesheet" type="text/css" href="${CSS_PATH}/index/contacts.css"/>
+		<script>
+			function test(){
+				alert(1);
+			}
+		</script>
+	</static>
+</page>
