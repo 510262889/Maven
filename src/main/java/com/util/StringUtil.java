@@ -408,4 +408,11 @@ public class StringUtil {
         }
         return buffer.toString();
     }
+    
+    /**
+     * 将字符串转换为带引号
+     */
+    public static String encodeQuotationString( String input ){
+    	return "\'" + input + "\'";
+    }
 }

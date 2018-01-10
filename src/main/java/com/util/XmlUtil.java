@@ -28,5 +28,12 @@ public class XmlUtil {
 	        } catch (DocumentException e) {
 	        	log.error( e.getStackTrace() );
 	        }
-	    }
+	 }
+	 
+	 /**
+	  * 获取XML元素属性
+	  */
+	 public static String getElementAttrValue( Element element , String key ){
+		 return StringUtil.empty( element.attributeValue( key ) );
+	 }
 }

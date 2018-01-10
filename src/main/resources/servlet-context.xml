@@ -23,16 +23,17 @@
     <!-- 相当于注册了DefaultAnnotationHandlerMapping和AnnotationMethodHandlerAdapter两个bean -->  
     <annotation-driven />  
     
-     <!-- 注解controller所在的包，  扫描路径 -->  
+    <!-- 扫描路径 -->  
     <context:component-scan base-package="com.springMvc.bean"/>  
-    <!-- 注解controller所在的包，  扫描路径 -->  
     <context:component-scan base-package="com.springMvc.controller"/>  
-    <!-- 注解controller所在的包，  扫描路径 -->  
     <context:component-scan base-package="com.springMvc.dao"/> 
+    <context:component-scan base-package="com.common.chart"/> 
+    
+    
     
      <!-- 控制器拦截，用于解析返回值注解 -->
 	<mvc:interceptors>  
-		<beans:bean class="com.filter.SpringInterceptor"></beans:bean>
+		<beans:bean class="com.interceptor.SpringInterceptor"></beans:bean>
 	    <mvc:interceptor>  
 	        <mvc:mapping path="*.action"/>  
 	        <beans:bean class="com.interceptor.SpringInterceptor"></beans:bean>
