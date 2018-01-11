@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.common.chart.bean.AxisLine;
 import com.common.chart.bean.axislabel.AxisLabel;
+import com.common.chart.bean.axislabel.XAxisLabel;
+import com.common.chart.bean.axislabel.YAxisLabel;
 import com.util.StringUtil;
 
 public class Axis {
@@ -19,21 +21,29 @@ public class Axis {
 	protected AxisLabel axisLabel;
 	// 轴线样式
 	protected AxisLine axisLine;
+	// 最大值
+	protected String max;
+	// 最小值
+	protected String min;
 	
-	public Axis( List<Object> datas  , AxisLabel axisLabel) {
+	public Axis( List<Object> datas  , Double yScaleWidth ,  YAxisLabel axisLabel , String max , String min) {
 		this.type = "value";
 		this.boundaryGap = StringUtil.encodeQuotationString( "0%" );
 		this.datas = datas;
 		this.axisLabel = axisLabel;
-		this.axisLine = new AxisLine( 1.0 );
+		this.axisLine = new AxisLine( yScaleWidth );
+		this.max = max;
+		this.min = min;
 	}
 	
-	public Axis( List<Object> datas , Double xScaleWidth , AxisLabel axisLabel) {
+	public Axis( List<Object> datas , Double xScaleWidth , XAxisLabel axisLabel , String max , String min ) {
 		this.type = "category";
 		this.boundaryGap = StringUtil.encodeQuotationString( "0%" );
 		this.datas = datas;
 		this.axisLabel = axisLabel;
 		this.axisLine = new AxisLine( xScaleWidth );
+		this.max = max;
+		this.min = min;
 	}
 	public String getType() {
 		return type;
@@ -71,5 +81,22 @@ public class Axis {
 	public void setAxisLine(AxisLine axisLine) {
 		this.axisLine = axisLine;
 	}
+
+	public String getMax() {
+		return max;
+	}
+
+	public void setMax(String max) {
+		this.max = max;
+	}
+
+	public String getMin() {
+		return min;
+	}
+
+	public void setMin(String min) {
+		this.min = min;
+	}
+	
 	
 }

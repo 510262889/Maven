@@ -2,7 +2,7 @@ package com.common.chart.bean;
 
 public class LineStyle {
 	private String color;
-	private Double xScaleWidth;
+	private Double scaleWidth;
 	
 	public LineStyle() {
 		color = "#999999";
@@ -13,11 +13,11 @@ public class LineStyle {
 	public void setColor(String color) {
 		this.color = color;
 	}
-	public Double getxScaleWidth() {
-		return xScaleWidth;
+	public Double getScaleWidth() {
+		return scaleWidth;
 	}
-	public void setxScaleWidth(Double xScaleWidth) {
-		this.xScaleWidth = xScaleWidth;
+	public void setScaleWidth(Double scaleWidth) {
+		this.scaleWidth = scaleWidth;
 	}
 	
 }

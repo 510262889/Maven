@@ -4,10 +4,10 @@ public class AxisLine {
 	private boolean show;
 	private LineStyle lineStyle;
 	
-	public AxisLine( Double xScaleWidth ) { 
+	public AxisLine( Double scaleWidth ) { 
 		show = true; 
 		lineStyle = new LineStyle();
-		lineStyle.setxScaleWidth( xScaleWidth );
+		lineStyle.setScaleWidth( scaleWidth );
 	}
 	public boolean isShow() {
 		return show;

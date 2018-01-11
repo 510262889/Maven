@@ -16,6 +16,7 @@ import com.common.chart.bean.axislabel.AxisLabel;
 import com.common.chart.bean.axislabel.XAxisLabel;
 import com.common.chart.bean.axislabel.YAxisLabel;
 import com.common.chart.bean.AxisLine;
+import com.common.chart.bean.Constant;
 import com.common.chart.bean.Grid;
 import com.common.chart.bean.Legend;
 import com.common.chart.bean.Title;
@@ -98,22 +99,22 @@ public class EchartArea extends ChartHasAxis{
 		
 		// 实例化表格对象,用于定义图形大小及偏移位置
 		Grid grid = new Grid();
-		grid.setWidth( width );
-		grid.setHeigth( height );
+		grid.setWidth( this.width );
+		grid.setHeigth( this.height );
 		// 初始化图形位置部分脚本
 		initGridJavaScript( grid );
 		
 		// 实例化轴线数值标记对象
-		AxisLabel xAxisLabel = new XAxisLabel( this.accuracy );
+		XAxisLabel xAxisLabel = new XAxisLabel( this.accuracy , this.interval , this.xMargin , this.rotate );
 		// 实例化轴线对象
-		Axis xAxis = new XAxis( xDatas , this.xScaleWidth, xAxisLabel );
+		Axis xAxis = new XAxis( xDatas , this.xScaleWidth, xAxisLabel , this.maxX , this.minX );
 		// 初始化横轴线部分脚本
 		initAxisJavaScript( xAxis );
 		
 		// 实例化轴线数值标记对象
-		AxisLabel yAxisLabel = new YAxisLabel( this.accuracy );
+		YAxisLabel yAxisLabel = new YAxisLabel( this.accuracy );
 		// 实例化轴线对象
-		Axis yAxis = new YAxis( yDatas , yAxisLabel );
+		Axis yAxis = new YAxis( yDatas , this.yScaleWidth, yAxisLabel , this.maxY , this.minY );
 		// 初始化横轴线部分脚本
 		initAxisJavaScript( yAxis );
 		
@@ -172,10 +173,61 @@ public class EchartArea extends ChartHasAxis{
 		List<Object> listXScale = new ArrayList<Object>();
 		// 纵轴数据
 		List<Object> listYScale = new ArrayList<Object>();
+		// 最大Y值和最大X值只在X或是Y为数值类型时可以计算
+		boolean xOk = true;
+		boolean yok = true;
+		Double maxY = 0.0;
+		Double maxX = 0.0;
+		Double minY = 0.0;
+		Double minX = 0.0;
+		int index = 0;
 		for (Map map : listData ) {
 			// Object tempXScale = map.get( xScale );
 			listXScale.add( map.get( xScale ) );
 			listYScale.add( ( String ) map.get( yScale ) );
+			// 计算最大Y值
+			try {
+				double currentY = Double.parseDouble( ( String )map.get( yScale ) );
+				if( index == 0 ) {
+					maxY = currentY;
+				}else{
+					if( maxY < currentY ) maxY = currentY;
+				}
+			} catch (Exception e) {
+				yok = false;
+			}
+			
+			// 计算最大X值
+			try {
+				double currentX = Double.parseDouble( ( String )map.get( xScale ) );
+				if( index == 0 ) {
+					maxX = currentX;
+				}else{
+					if( maxX < currentX ) maxX = currentX;
+				}
+			} catch (Exception e) {
+				xOk = false;
+			}
+						
+			index++;
+		}
+		// 计算X和Y的数据范围
+		if( xOk ){
+			Map<String, String> mapX = scaleAdjust( Double.parseDouble( this.minX ) , maxX );
+			this.maxX = mapX.get( "max" );
+			this.minX = mapX.get( "min" );
+		}else{
+			this.maxX = Constant.UNDEFINED;
+			this.minX = Constant.UNDEFINED;
+		}
+		
+		if( yok ){
+			Map<String, String> mapY = scaleAdjust( Double.parseDouble( this.minY ) , maxY );
+			this.maxY = mapY.get( "max" );
+			this.minY = mapY.get( "min" );
+		}else {
+			this.maxY = Constant.UNDEFINED;
+			this.minY = Constant.UNDEFINED;
 		}
 		
 		for( Area area : areas ){
@@ -275,6 +327,8 @@ public class EchartArea extends ChartHasAxis{
  			resultJs.append( "           xAxis : [{ ");
 			resultJs.append( "                     type : '" + xAxis.getType() + "',");
 			resultJs.append( "                     boundaryGap : " + xAxis.getBoundaryGap() + ",");
+			resultJs.append( "                     min : "+xAxis.getMin()+",");
+			resultJs.append( "                     max : "+xAxis.getMax()+",");
 			resultJs.append( "                     data : "+data+",");
 			resultJs.append( "                     name : "+xAxis.getUnit()+",");
 			resultJs.append( "                     axisLabel : {show:"+axisLabel.isShow()+",interval:"+axisLabel.getInterval()+" , margin:"+axisLabel.getMargin()+",rotate:"+axisLabel.getRotate()+"},");
@@ -282,7 +336,7 @@ public class EchartArea extends ChartHasAxis{
 			resultJs.append( "                     			  show:"+axisLine.isShow()+",");
 			resultJs.append( "                     			  lineStyle:{");
 			resultJs.append( "                     			    color:'"+axisLine.getLineStyle().getColor()+"',");
-			resultJs.append( "                     			    width:"+axisLine.getLineStyle().getxScaleWidth());
+			resultJs.append( "                     			    width:"+axisLine.getLineStyle().getScaleWidth());
 			resultJs.append( "                     			  }");
 			resultJs.append( "                     			}");
 			resultJs.append( "                    }],");
@@ -299,14 +353,15 @@ public class EchartArea extends ChartHasAxis{
 			resultJs.append( "    {");
 			resultJs.append( "        type : '"+yAxis.getType()+"',");
 			resultJs.append( "        boundaryGap : "+yAxis.getBoundaryGap()+",");
-			//resultJs.append( "        data : "+data+",");
+			resultJs.append( "        min : "+yAxis.getMin()+",");
+			resultJs.append( "        max : "+yAxis.getMax()+",");
 			resultJs.append( "        name : "+yAxis.getUnit()+",");
 			resultJs.append( "        axisLabel : {show:"+axisLabel.isShow()+",formatter:"+axisLabel.getFormatter()+"},");
 			resultJs.append( "        axisLine:{");
 			resultJs.append( "            show:"+axisLine.isShow()+",");
 			resultJs.append( "            lineStyle:{");
 			resultJs.append( "                color:'"+axisLine.getLineStyle().getColor()+"',");
-			resultJs.append( "                width:"+axisLine.getLineStyle().getxScaleWidth()+"");
+			resultJs.append( "                width:"+axisLine.getLineStyle().getScaleWidth()+"");
 			resultJs.append( "            }");
 			resultJs.append( "        }");
 			resultJs.append( "    }");

@@ -10,7 +10,7 @@ public class AxisLabel {
 	// 轴线和坐标显示数值的距离
 	protected Double margin;
 	// 轴线显示值的旋转角度
-	protected Double rotate;
+	protected String rotate;
 
 	public AxisLabel( double accuracy ) {
 		this.show = true;
@@ -40,10 +40,10 @@ public class AxisLabel {
 	public void setMargin(Double margin) {
 		this.margin = margin;
 	}
-	public Double getRotate() {
+	public String getRotate() {
 		return rotate;
 	}
-	public void setRotate(Double rotate) {
+	public void setRotate(String rotate) {
 		this.rotate = rotate;
 	}
 	

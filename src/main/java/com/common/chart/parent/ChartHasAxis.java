@@ -1,7 +1,9 @@
 package com.common.chart.parent;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -9,6 +11,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Component;
 
+import com.common.chart.bean.Constant;
 import com.util.StringUtil;
 import com.util.XmlUtil;
 
@@ -40,11 +43,15 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
     // 是否交换XY轴
 	protected boolean changeXY;
     // 纵轴起点值,设置之后纵轴最大值自动设置为数据中的最大值
-	protected int minY;
+	protected String minY;
     // 横轴起点值,设置之后横轴最大值自动设置为数据中的最大值
-	protected int minX;
+	protected String minX;
+	// 纵轴最大值
+	protected String maxY;
+	// 横轴最大值
+	protected String maxX;
     // 横轴刻度间距
-	protected int interval;
+	protected double interval;
     // 横轴显示值的旋转角度
 	protected String rotate;
     // 坐标和坐标数值的显示距离
@@ -56,6 +63,8 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
 	
 	protected ChartHasAxis(){
 		super();
+		this.maxX = Constant.UNDEFINED;
+        this.maxY = Constant.UNDEFINED;
 	}
 	
 	@Override
@@ -78,12 +87,40 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
         this.autoXScale = "".equals( XmlUtil.getElementAttrValue( rootElement , "autoXScale" ) ) ? false : true;
         this.autoYScale = "".equals( XmlUtil.getElementAttrValue( rootElement , "autoYScale" ) ) ? false : true;
         this.changeXY = "".equals( XmlUtil.getElementAttrValue( rootElement , "changeXY" ) ) ? false : true;
-        this.minY = "".equals( XmlUtil.getElementAttrValue( rootElement , "minY" ) ) ? 0 : Integer.parseInt( XmlUtil.getElementAttrValue( rootElement , "minY" ) );
-        this.minX = "".equals( XmlUtil.getElementAttrValue( rootElement , "minX" ) ) ? 0 : Integer.parseInt( XmlUtil.getElementAttrValue( rootElement , "minX" ) );
+        this.minY = "".equals( XmlUtil.getElementAttrValue( rootElement , "minY" ) ) ? Constant.UNDEFINED : XmlUtil.getElementAttrValue( rootElement , "minY" );
+        this.minX = "".equals( XmlUtil.getElementAttrValue( rootElement , "minX" ) ) ? Constant.UNDEFINED : XmlUtil.getElementAttrValue( rootElement , "minX" );
         this.interval = "".equals( XmlUtil.getElementAttrValue( rootElement , "interval" ) ) ? 0 : Integer.parseInt( XmlUtil.getElementAttrValue( rootElement , "interval" ) );
         this.rotate = XmlUtil.getElementAttrValue( rootElement , "rotate" );
         this.xMargin = "".equals( XmlUtil.getElementAttrValue( rootElement , "xMargin" ) ) ? 0 : Double.parseDouble( XmlUtil.getElementAttrValue( rootElement , "xMargin" ) );
         this.xScaleWidth = "".equals( XmlUtil.getElementAttrValue( rootElement , "xScaleWidth" ) ) ? 0 : Double.parseDouble( XmlUtil.getElementAttrValue( rootElement , "xScaleWidth" ) );
         this.yScaleWidth = "".equals( XmlUtil.getElementAttrValue( rootElement , "yScaleWidth" ) ) ? 0 : Double.parseDouble( XmlUtil.getElementAttrValue( rootElement , "yScaleWidth" ) );
+        this.width = StringUtil.encodeQuotationString( XmlUtil.getElementAttrValue( rootElement , "width" ) );
+        this.height = StringUtil.encodeQuotationString( XmlUtil.getElementAttrValue( rootElement , "height" ) );
 	}
+	
+	/**
+     * 调整刻度
+     * @param vMin 数据中的最小值
+     * @param vMax 数据中的最大值
+     */
+	protected Map<String,String> scaleAdjust( double vMin , double vMax ){
+		Map<String, String> map = new HashMap<String, String>();
+        /*差值除以10，作为刻度差值的参考值*/
+		double vDiff = Math.abs(vMax-vMin)/10;
+		double vStep = 10;
+        if( vDiff > 0 ){
+            vStep = 0.0001;
+            while( vStep < vDiff ) vStep *=10;
+            if( vDiff < vStep/2 ) vStep *=0.5;
+        }
+        /*调整最大值、最小值*/
+        vMax = vMax - (vMax % vStep) + vStep;
+        vMin = vMin - (vMin % vStep);
+        /*格式化*/
+        vMax = Math.round( vMax * 10000 ) / 10000;
+        vMin = Math.round( vMin * 10000 ) / 10000;
+        map.put( "max" , vMax + "" );
+        map.put( "min" , vMin + "" ); 
+        return map;
+    }
 }
