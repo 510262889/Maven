@@ -181,7 +181,7 @@ public class EchartArea extends ChartHasAxis{
 		for( Area area : areas ){
 			chartData.put( area , new ArrayList<Object>() );
 			for (Map map : listData ) {
-				chartData.get( area ).add(  map.get( area.getField() ) );
+				chartData.get( area ).add(  map.get( area.getField() ) + "" );
 			}
 		}
 		this.xDatas = listXScale;
@@ -195,9 +195,9 @@ public class EchartArea extends ChartHasAxis{
 	 */
 	private void initHeadJavaScript( String id ){
 		resultJs.append( " <script> " );
-		resultJs.append( "   $(function(){");
-		resultJs.append( " 		var myChart = echarts.init( document.getElementById('"+id+"') ); ");
-		resultJs.append( "  	var option = { ");
+		resultJs.append( "   $(function(){" );
+		resultJs.append( " 		var myChart = echarts.init( document.getElementById('"+id+"') ); " );
+		resultJs.append( "  	var option = { " );
 	}
 	
 	/**
@@ -206,10 +206,10 @@ public class EchartArea extends ChartHasAxis{
 	 */
 	private void initTitleJavaScript( Title title ){
 		resultJs.append( "     		 title: { ");
-		resultJs.append( "      		   text: '" + title.getText() + "', ");
-		resultJs.append( "       		   x : " + title.getX() + ", ");
-		resultJs.append( "       		   y : " + title.getY() + ", ");
-		resultJs.append( "       		   textStyle: " + title.getTextStyle() + " ");
+		resultJs.append( "      		   text: '" + title.getText() + "', " );
+		resultJs.append( "       		   x : " + title.getX() + ", " );
+		resultJs.append( "       		   y : " + title.getY() + ", " );
+		resultJs.append( "       		   textStyle: " + title.getTextStyle() + " " );
 		resultJs.append( "     		 }, ");
 	}
 	
@@ -218,12 +218,6 @@ public class EchartArea extends ChartHasAxis{
 	 */
 	private void initColorJavaScript(){
 		String colorStr = JsonUtil.toJson( colors );
-		/*for( int a = 0 ; a < colors.size() ; a++ ){
-			String currentColor = colors.get( a );
-			if( a == 0 ) colorStr += currentColor;
-			else colorStr += "," + currentColor;
-		}
-		colorStr += "]";*/
 		resultJs.append( "     		 color:"+colorStr+", ");
 	}
 	
@@ -231,7 +225,7 @@ public class EchartArea extends ChartHasAxis{
 	 * 初始化悬浮提示部分脚本
 	 */
 	private void initToolTipJavaScript( ToolTip toolTip ){
-		resultJs.append( "     		 tooltip : { trigger:"+toolTip.getTrigger()+"}, ");
+		resultJs.append( "     		 tooltip : { trigger:"+toolTip.getTrigger()+"}, " );
 	}
 	
 	/**
@@ -247,10 +241,10 @@ public class EchartArea extends ChartHasAxis{
 			}
 		}
 		legendStr += "]";
-		resultJs.append( "     		 legend: { ");
-		resultJs.append( "     	   		  y:"+legend.getY()+", ");
-		resultJs.append( "       	      data: "+legendStr+" ");
-		resultJs.append( "      	 }, ");
+		resultJs.append( "     		 legend: { " );
+		resultJs.append( "     	   		  y:"+legend.getY()+", " );
+		resultJs.append( "       	      data: "+legendStr+" " );
+		resultJs.append( "      	 }, " );
 	}
 	
 	/**
@@ -273,14 +267,6 @@ public class EchartArea extends ChartHasAxis{
 	 */
 	private void initAxisJavaScript( Axis axis ){
 		String data = JsonUtil.toJson( axis.getDatas() );
-		/*if( ObjectUtil.nonNull( axis.getDatas() ) )
-		for( int a = 0 ; a < axis.getDatas().size() ; a++ ){
-			String current = axis.getDatas().get( a );
-			if( a == 0 ) data += current;
-			else data += "," + current;
-		}
-		data += "]";*/
-		
 		if( axis instanceof XAxis ){
 			XAxis xAxis = ( XAxis ) axis;
 			xAxis.setUnit( xUnit );

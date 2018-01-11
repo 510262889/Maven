@@ -17,7 +17,7 @@
 	<data>
 		<dataSource>
 			<![CDATA[
-				SELECT * FROM WM_INTE_WARN WHERE T_WARN > TO_DATE('20170715','yyyymmdd')
+				SELECT * FROM WM_INTE_WARN WHERE T_WARN > TO_DATE('20170715','yyyymmdd') order by T_WARN asc
           	 ]]>
 		</dataSource>
 		<dataDetail>
