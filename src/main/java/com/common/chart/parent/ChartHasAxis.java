@@ -16,7 +16,6 @@ import com.common.chart.bean.axis.XAxis;
 import com.common.chart.bean.axis.YAxis;
 import com.common.chart.bean.axislabel.AxisLabel;
 import com.common.chart.bean.chart.Chart;
-import com.common.chart.bean.chart.axis.HasAxisChart;
 import com.common.chart.inter.*;
 import com.util.JsonUtil;
 import com.util.StringUtil;

@@ -44,6 +44,8 @@ public class EchartArea extends ChartHasAxis{
     private boolean isStack = false;
     // 是否曲线平滑
     private boolean isSmooth = false;
+    // 是否显示投影
+    private boolean showShadow = false;
     
 	public EchartArea(){super(); this.resultJs = new StringBuffer(); }
 	
@@ -137,6 +139,7 @@ public class EchartArea extends ChartHasAxis{
         Element rootElement = document.getRootElement();
         this.isStack = Boolean.parseBoolean( XmlUtil.getElementAttrValue( rootElement , "isStack" ) );
         this.isSmooth = Boolean.parseBoolean( XmlUtil.getElementAttrValue( rootElement , "isSmooth" ) );
+        this.showShadow = Boolean.parseBoolean( XmlUtil.getElementAttrValue( rootElement , "showShadow" ) );
         // 获取chart标签
         for( Element secondElement : rootElement.elements() ){
         	if( "data".equals( secondElement.getName() ) ) {
@@ -182,7 +185,14 @@ public class EchartArea extends ChartHasAxis{
 				resultJs.append( "              ,type:'line'"  );
 				if( isStack ) resultJs.append( "              ,stack : '总量'"  );
 				resultJs.append( "              ,data:"+ JsonUtil.toJson( chartData.get( area ) )  );
-				resultJs.append( "              ,itemStyle:  {normal: {color:" + area.getColorPoint() + ",lineStyle:{color:" + area.getColorLine() + "}}}"  );
+				resultJs.append( "              ,itemStyle:  {");
+				resultJs.append( "							  normal: { ");
+				resultJs.append( "                                      color:" + area.getColorPoint());  
+				if( showShadow ) resultJs.append( "	         			,areaStyle:{color : "+area.getColorArea()+"}" ) ;
+				resultJs.append( "                           		  }");
+				resultJs.append( "							  ,lineStyle:{color:" + area.getColorLine() + "}");
+				
+				resultJs.append( " 				}");
 				if( isSmooth ){
 					resultJs.append( "              ,smooth:true"  );
 					resultJs.append( "              ,smoothMonotone:'x'"  );
