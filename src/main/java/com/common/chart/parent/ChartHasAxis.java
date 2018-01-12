@@ -28,6 +28,8 @@ import com.util.XmlUtil;
 public abstract class ChartHasAxis extends ChartsAnalysis {
 	// 轴线刻度精度
 	protected double accuracy = Math.pow( 10 , 4 );
+	// 数据源
+	protected List<Map> listData = new ArrayList<Map>();
     // 横轴单位
 	protected String xUnit;
 	 // Y轴单位
@@ -36,7 +38,7 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
 	protected List<Object> yDatas;
     // X横轴数据字段
 	protected String xScale;
-	// X横轴数据字段
+	// Y横轴数据字段
 	protected String yScale;
 	// X横轴数据
 	protected List<Object> xDatas;
@@ -107,7 +109,7 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void initDataSource( List< ? extends Chart > chartList , Object... parms ){
 		// 获取到的数据
-		List<Map> listData = ( List<Map> ) hibernateDao.queryToMap( this.dataSource, parms );
+		listData = ( List<Map> ) hibernateDao.queryToMap( this.dataSource, parms );
 		// 横轴数据
 		List<Object> listXScale = new ArrayList<Object>();
 		// 纵轴数据

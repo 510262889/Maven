@@ -46,12 +46,16 @@
 	<data>
 		<dataSource>
 			<![CDATA[
-				SELECT T_WARN , count(T_WARN) TIMES FROM WM_INTE_WARN WHERE T_WARN > TO_DATE('20170715','yyyymmdd') group by T_WARN ORDER BY T_WARN
+				SELECT A.*,10 MARK FROM (
+					SELECT T_WARN , count(T_WARN) TIMES FROM WM_INTE_WARN WHERE T_WARN > TO_DATE('20170715','yyyymmdd') group by T_WARN ORDER BY T_WARN
+				) A
+				
           	 ]]>
 		</dataSource>
 		<dataDetail>
 			<chart name="告警次数" field="TIMES" colorLine="#33CC99" colorArea="#33CC99" colorPoint="#33CC99"/>
 			<chart name="告警次数1" field="TIMES" colorLine="#ff00ff" colorArea="#ff00ff" colorPoint="#ff00ff"/>
+			<markLine name="标记线" color="#000" width="2" type="solid" yScale="15"/>
 		</dataDetail>
 	</data>
 </area>

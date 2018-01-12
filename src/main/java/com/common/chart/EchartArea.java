@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,6 +15,7 @@ import com.common.chart.bean.axis.*;
 import com.common.chart.bean.axislabel.XAxisLabel;
 import com.common.chart.bean.axislabel.YAxisLabel;
 import com.common.chart.bean.chart.axis.Area;
+import com.common.chart.bean.chart.axis.MarkLine;
 import com.common.chart.bean.Grid;
 import com.common.chart.bean.Legend;
 import com.common.chart.bean.Title;
@@ -38,6 +40,8 @@ public class EchartArea extends ChartHasAxis{
     private List<String> colors;
     // 图形集合
     private List<Area> areas;
+    // 标记线
+    private List<MarkLine> markLines;
     // 图例集合
     private List<String> legends;
     // 是否堆叠
@@ -60,6 +64,7 @@ public class EchartArea extends ChartHasAxis{
     	this.resultJs = new StringBuffer();
     	this.colors = new ArrayList<String>();
     	this.areas = new ArrayList<Area>();
+    	this.markLines = new ArrayList<MarkLine>();
     	this.legends = new ArrayList<String>();
 	}
 	
@@ -73,7 +78,7 @@ public class EchartArea extends ChartHasAxis{
  		// 解析配置
 		analysisConfiguration( fileIps );
 		// 初始化数据源
-		initDataSource( areas , parms );
+		initDataSource( areas ,  parms );
 		
 		// 初始化头部脚本
 		initHeadJavaScript( this.id );
@@ -165,12 +170,23 @@ public class EchartArea extends ChartHasAxis{
         						// 添加图例颜色
         						legends.add( name );
         					}
+        					
+        					if( "markLine".equals( chartElement.getName() ) ){
+        						String name = XmlUtil.getElementAttrValue( chartElement ,  "name" );
+        						String color = XmlUtil.getElementAttrValue( chartElement ,  "color" );
+        						String width = XmlUtil.getElementAttrValue( chartElement ,  "width" );
+        						String type = XmlUtil.getElementAttrValue( chartElement ,  "type" );
+        						String yScale = XmlUtil.getElementAttrValue( chartElement ,  "yScale" );
+
+        						MarkLine markLine = new MarkLine( name, color, width, type , yScale );
+        						markLines.add( markLine );
+        					}
         				}
         			}
         		}
         	}
         }
-	}
+  	}
 
 	/**
 	 * 初始化数据
@@ -187,7 +203,7 @@ public class EchartArea extends ChartHasAxis{
 				resultJs.append( "              ,data:"+ JsonUtil.toJson( chartData.get( area ) )  );
 				resultJs.append( "              ,itemStyle:  {");
 				resultJs.append( "							  normal: { ");
-				resultJs.append( "                                      color:" + area.getColorPoint());  
+				resultJs.append( "                                      color:" + area.getColorPoint() );  
 				if( showShadow ) resultJs.append( "	         			,areaStyle:{color : "+area.getColorArea()+"}" ) ;
 				resultJs.append( "                           		  }");
 				resultJs.append( "							  ,lineStyle:{color:" + area.getColorLine() + "}");
@@ -205,7 +221,42 @@ public class EchartArea extends ChartHasAxis{
 				index++;
 			}
 		}
+		
+		if( ObjectUtil.nonNull( markLines ) ){
+			int markLineLen = getMarkLineLength( this.listData );
+			List<String> data = new ArrayList<String>();
+			for( MarkLine markLine : markLines ){
+				for ( int a = 0 ; a < markLineLen ; a++ ){
+	                if( StringUtil.notBlank( markLine.getyScale() ) ) {
+	                	try {
+	                		// 配置的字段本就是数值
+	                		data.add( Integer.parseInt( markLine.getyScale() ) + "" );
+						} catch (Exception e) {
+							System.err.println( "配置标记线用的不是数字" );
+		                    int y = 0;
+		                    if( listData.size() > 0 ){
+		                    	try{y = Integer.parseInt( listData.get( 0 ).get( markLine.getyScale() ) +"" );}
+		                    	catch (Exception ex) {System.err.println("配置标记线通过数据库字段设置位置失败");}
+		                    }else {
+								y = 0;
+							}
+		                    data.add( y + "" );
+						}
+	                }
+	            }
+				resultJs.append( markLine.toString( data ) );
+			}
+		}
+		
+		
 		resultJs.append( "           ] ");
 	}
+	
+	/**
+     * 获取标记线的长度
+     */
+	private int getMarkLineLength( List<Map> listData ){
+        return listData.size();
+    }
 	
 }
