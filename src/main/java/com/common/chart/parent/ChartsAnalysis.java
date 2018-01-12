@@ -16,13 +16,20 @@ import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.common.chart.bean.Legend;
+import com.common.chart.bean.Title;
+import com.common.chart.bean.ToolTip;
+import com.common.chart.bean.chart.Chart;
+import com.common.chart.inter.JavaScriptBuilder;
 import com.exception.MyExpection;
 import com.springMvc.dao.HibernateDao;
+import com.util.JsonUtil;
+import com.util.ObjectUtil;
 import com.util.StringUtil;
 import com.util.XmlUtil;
 
 @Component
-public abstract class ChartsAnalysis {
+public abstract class ChartsAnalysis implements JavaScriptBuilder{
 	public static Log log = LogFactory.getLog( ChartsAnalysis.class );
 	// 配置文件对象
 	protected Document document;
@@ -87,11 +94,98 @@ public abstract class ChartsAnalysis {
     }
 
     /**
+     * 初始化数据源
+     */
+    protected abstract void initDataSource( List< ? extends Chart > chartList , Object... parms );
+    
+    /**
      * 生成图形
      */
     protected abstract String createChart( HttpServletRequest request , Object... parms );
     
     /**
+	 * 初始化头部脚本
+	 * @param 图形父ID
+	 */
+	public void initHeadJavaScript( String id ){
+		resultJs.append( " <script> " );
+		resultJs.append( "   $(function(){" );
+		resultJs.append( " 		var myChart = echarts.init( document.getElementById('"+id+"') ); " );
+		resultJs.append( "  	var option = { " );
+	}
+	
+	/**
+	 * 初始化标题部分脚本
+	 * @param title
+	 */
+	public void initTitleJavaScript( Title title ){
+		resultJs.append( "     		 title: { ");
+		resultJs.append( "      		   text: '" + title.getText() + "', " );
+		resultJs.append( "       		   x : " + title.getX() + ", " );
+		resultJs.append( "       		   y : " + title.getY() + ", " );
+		resultJs.append( "       		   textStyle: " + title.getTextStyle() + " " );
+		resultJs.append( "     		 }, ");
+	}
+	
+	/**
+	 * 初始化颜色部分脚本
+	 */
+	public void initColorJavaScript( List<String> colors ){
+		String colorStr = JsonUtil.toJson( colors );
+		resultJs.append( "     		 color:"+colorStr+", ");
+	}
+    
+	/**
+	 * 初始化悬浮提示部分脚本
+	 */
+	public void initToolTipJavaScript( ToolTip toolTip ){
+		resultJs.append( "     		 tooltip : { trigger:"+toolTip.getTrigger()+"}, " );
+	}
+	
+	/**
+	 * 初始化图例部分脚本
+	 */
+	public void initLegendJavaScript( Legend legend ){
+		String legendStr = "[";
+		if( ObjectUtil.nonNull( legend.getData() ) ){
+			for( int a = 0 ; a < legend.getData().size() ; a++ ){
+				String currentColor = legend.getData().get( a );
+				if( a == 0 ) legendStr += currentColor;
+				else legendStr += "," + currentColor;
+			}
+		}
+		legendStr += "]";
+		resultJs.append( "     		 legend: { " );
+		resultJs.append( "     	   		  y:"+legend.getY()+", " );
+		resultJs.append( "       	      data: "+legendStr+" " );
+		resultJs.append( "      	 }, " );
+	}
+	
+	/**
+	 * 初始化无数据时的效果
+	 */
+	public void initNoDataEffect() {
+		resultJs.append( "           noDataLoadingOption: { ");
+		resultJs.append( "         			  text: '暂无数据', ");
+		resultJs.append( "           		  effect: 'bubble', ");
+		resultJs.append( "           		  effectOption: { ");
+		resultJs.append( "             			     effect: { ");
+		resultJs.append( "                  	     		n: 0 ");
+		resultJs.append( "          	   			   } ");
+		resultJs.append( "       	 		  } ");
+		resultJs.append( "      	  }, ");
+	}
+	
+    /**
+	 * 初始底部脚本
+	 */
+	public void initFootJavaScript(){
+		resultJs.append( "		 }; ");
+		resultJs.append( " 		myChart.setOption( option ); ");
+		resultJs.append( " })" );
+		resultJs.append( " </script>" );
+	}
+	/**
      * 解析图形标题
      */
     private void titleStyleAnalysis( Element titleStyle ){

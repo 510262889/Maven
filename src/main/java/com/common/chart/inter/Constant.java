@@ -1,4 +1,4 @@
-package com.common.chart.bean;
+package com.common.chart.inter;
 
 public interface Constant {
 	String UNDEFINED = "undefined";

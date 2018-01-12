@@ -39,7 +39,6 @@
 	isSmooth="true"
 	autoXScale="false"
 	autoYScale="false"
-	changeXY="false"
 	rotate="35"
 	xMargin="8"
 >
@@ -51,7 +50,8 @@
           	 ]]>
 		</dataSource>
 		<dataDetail>
-			<chart name="告警次数" field="TIMES" colorLine="#33CC99" colorArea="#33CC99"/>
+			<chart name="告警次数" field="TIMES" colorLine="#33CC99" colorArea="#33CC99" colorPoint="#33CC99"/>
+			<chart name="告警次数1" field="TIMES" colorLine="#ff00ff" colorArea="#ff00ff" colorPoint="#ff00ff"/>
 		</dataDetail>
 	</data>
 </area>

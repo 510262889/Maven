@@ -1,4 +1,4 @@
-package com.common.chart.bean.chart;
+package com.common.chart.bean.chart.axis;
 
 import com.util.StringUtil;
 
@@ -7,7 +7,7 @@ import com.util.StringUtil;
  *
  * 折线图对象
  */
-public class Area extends Chart {
+public class Area extends HasAxisChart {
 	private String colorLine;
 	private String colorArea;
 	private String colorPoint;

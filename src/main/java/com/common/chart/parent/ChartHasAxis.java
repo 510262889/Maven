@@ -1,17 +1,24 @@
 package com.common.chart.parent;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Component;
 
-import com.common.chart.bean.Constant;
+import com.common.chart.bean.AxisLine;
+import com.common.chart.bean.Grid;
+import com.common.chart.bean.axis.Axis;
+import com.common.chart.bean.axis.XAxis;
+import com.common.chart.bean.axis.YAxis;
+import com.common.chart.bean.axislabel.AxisLabel;
+import com.common.chart.bean.chart.Chart;
+import com.common.chart.bean.chart.axis.HasAxisChart;
+import com.common.chart.inter.*;
+import com.util.JsonUtil;
 import com.util.StringUtil;
 import com.util.XmlUtil;
 
@@ -86,7 +93,7 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
         this.xScaleIsShow = Boolean.valueOf( XmlUtil.getElementAttrValue( rootElement , "xScaleIsShow" ) ) ;
         this.autoXScale = "".equals( XmlUtil.getElementAttrValue( rootElement , "autoXScale" ) ) ? false : true;
         this.autoYScale = "".equals( XmlUtil.getElementAttrValue( rootElement , "autoYScale" ) ) ? false : true;
-        this.changeXY = "".equals( XmlUtil.getElementAttrValue( rootElement , "changeXY" ) ) ? false : true;
+        this.changeXY = Boolean.parseBoolean( XmlUtil.getElementAttrValue( rootElement , "changeXY" ) );
         this.minY = "".equals( XmlUtil.getElementAttrValue( rootElement , "minY" ) ) ? Constant.UNDEFINED : XmlUtil.getElementAttrValue( rootElement , "minY" );
         this.minX = "".equals( XmlUtil.getElementAttrValue( rootElement , "minX" ) ) ? Constant.UNDEFINED : XmlUtil.getElementAttrValue( rootElement , "minX" );
         this.interval = "".equals( XmlUtil.getElementAttrValue( rootElement , "interval" ) ) ? 0 : Integer.parseInt( XmlUtil.getElementAttrValue( rootElement , "interval" ) );
@@ -96,6 +103,154 @@ public abstract class ChartHasAxis extends ChartsAnalysis {
         this.yScaleWidth = "".equals( XmlUtil.getElementAttrValue( rootElement , "yScaleWidth" ) ) ? 0 : Double.parseDouble( XmlUtil.getElementAttrValue( rootElement , "yScaleWidth" ) );
         this.width = StringUtil.encodeQuotationString( XmlUtil.getElementAttrValue( rootElement , "width" ) );
         this.height = StringUtil.encodeQuotationString( XmlUtil.getElementAttrValue( rootElement , "height" ) );
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void initDataSource( List< ? extends Chart > chartList , Object... parms ){
+		// 获取到的数据
+		List<Map> listData = ( List<Map> ) hibernateDao.queryToMap( this.dataSource, parms );
+		// 横轴数据
+		List<Object> listXScale = new ArrayList<Object>();
+		// 纵轴数据
+		List<Object> listYScale = new ArrayList<Object>();
+		// 最大Y值和最大X值只在X或是Y为数值类型时可以计算
+		boolean xOk = true;
+		boolean yok = true;
+		Double maxY = 0.0;
+		Double maxX = 0.0;
+		int index = 0;
+		for (Map map : listData ) {
+			// Object tempXScale = map.get( xScale );
+			listXScale.add( map.get( xScale ) );
+			listYScale.add( ( String ) map.get( yScale ) );
+			// 计算最大Y值
+			try {
+				double currentY = Double.parseDouble( ( String )map.get( yScale ) );
+				if( index == 0 ) {
+					maxY = currentY;
+				}else{
+					if( maxY < currentY ) maxY = currentY;
+				}
+			} catch (Exception e) {
+				yok = false;
+			}
+			
+			// 计算最大X值
+			try {
+				double currentX = Double.parseDouble( ( String )map.get( xScale ) );
+				if( index == 0 ) {
+					maxX = currentX;
+				}else{
+					if( maxX < currentX ) maxX = currentX;
+				}
+			} catch (Exception e) {
+				xOk = false;
+			}
+						
+			index++;
+		}
+		// 计算X和Y的数据范围
+		if( xOk && this.autoXScale ){
+			Map<String, String> mapX = scaleAdjust( Double.parseDouble( this.minX ) , maxX );
+			this.maxX = mapX.get( "max" );
+			this.minX = mapX.get( "min" );
+		}else{
+			this.maxX = Constant.UNDEFINED;
+			this.minX = Constant.UNDEFINED;
+		}
+		
+		if( yok && this.autoYScale ){
+			Map<String, String> mapY = scaleAdjust( Double.parseDouble( this.minY ) , maxY );
+			this.maxY = mapY.get( "max" );
+			this.minY = mapY.get( "min" );
+		}else {
+			this.maxY = Constant.UNDEFINED;
+			this.minY = Constant.UNDEFINED;
+		}
+		
+		for( Chart chart : chartList ){
+			chartData.put( chart , new ArrayList<Object>() );
+			for (Map map : listData ) {
+				chartData.get( chart ).add(  map.get( chart.getField() ) + "" );
+			}
+		}
+		this.xDatas = listXScale;
+		this.yDatas = listYScale;
+		
+	}
+	
+	/**
+	 * 初始化图形位置部分脚本
+	 */
+	public void initGridJavaScript( Grid grid ){
+		resultJs.append( "     		 grid: { ");
+		resultJs.append( "        		  y:'"+grid.getY()+"', ");
+		resultJs.append( "        		  x: '"+grid.getX()+"', ");
+		resultJs.append( "        		  x2: '"+grid.getX2()+"', ");
+		resultJs.append( "          	  y2: '"+grid.getY2()+"', ");
+		resultJs.append( "          	  width:"+grid.getWidth()+", ");
+		resultJs.append( "                height:"+grid.getHeigth()+", ");
+		resultJs.append( "                containLabel: "+grid.isContainLabel()+" ");
+		resultJs.append( "           }, ");
+	}
+	
+	/**
+	 * 初始化轴线数据
+	 */
+	public void initAxisJavaScript( Axis axis ){
+		String data = JsonUtil.toJson( axis.getDatas() );
+		if( axis instanceof XAxis ){
+			XAxis xAxis = ( XAxis ) axis;
+			xAxis.setUnit( xUnit );
+			AxisLabel axisLabel = xAxis.getAxisLabel();
+			AxisLine axisLine = xAxis.getAxisLine();
+ 			if( this.changeXY ) resultJs.append( "           yAxis : [ ");
+ 			else resultJs.append( "           xAxis : [ ");
+			resultJs.append( "   				{");
+			resultJs.append( "                     type : '" + xAxis.getType() + "',");
+			resultJs.append( "                     boundaryGap : " + xAxis.getBoundaryGap() + ",");
+			resultJs.append( "                     min : "+xAxis.getMin()+",");
+			resultJs.append( "                     max : "+xAxis.getMax()+",");
+			resultJs.append( "                     data : "+data+",");
+			resultJs.append( "                     name : "+xAxis.getUnit()+",");
+			resultJs.append( "                     axisLabel : {show:"+axisLabel.isShow()+",interval:"+axisLabel.getInterval()+" , margin:"+axisLabel.getMargin()+",rotate:"+axisLabel.getRotate()+"},");
+			resultJs.append( "                     axisLine:{");
+			resultJs.append( "                     			  show:"+axisLine.isShow()+",");
+			resultJs.append( "                     			  lineStyle:{");
+			resultJs.append( "                     			    color:'"+axisLine.getLineStyle().getColor()+"',");
+			resultJs.append( "                     			    width:"+axisLine.getLineStyle().getScaleWidth());
+			resultJs.append( "                     			  }");
+			resultJs.append( "                     			}");
+			resultJs.append( "                    }],");
+			return;
+		}
+		
+		if( axis instanceof YAxis ){
+			YAxis yAxis = ( YAxis ) axis;
+			yAxis.setUnit( yUnit );
+			AxisLabel axisLabel = yAxis.getAxisLabel();
+			AxisLine axisLine = yAxis.getAxisLine();
+			
+			if( this.changeXY ) resultJs.append( "           xAxis : [ ");
+ 			else resultJs.append( "           yAxis : [ ");
+			resultJs.append( "    {");
+			resultJs.append( "        type : '"+yAxis.getType()+"',");
+			resultJs.append( "        boundaryGap : "+yAxis.getBoundaryGap()+",");
+			resultJs.append( "        min : "+yAxis.getMin()+",");
+			resultJs.append( "        max : "+yAxis.getMax()+",");
+			resultJs.append( "        name : "+yAxis.getUnit()+",");
+			resultJs.append( "        axisLabel : {show:"+axisLabel.isShow()+",formatter:"+axisLabel.getFormatter()+"},");
+			resultJs.append( "        axisLine:{");
+			resultJs.append( "            show:"+axisLine.isShow()+",");
+			resultJs.append( "            lineStyle:{");
+			resultJs.append( "                color:'"+axisLine.getLineStyle().getColor()+"',");
+			resultJs.append( "                width:"+axisLine.getLineStyle().getScaleWidth()+"");
+			resultJs.append( "            }");
+			resultJs.append( "        }");
+			resultJs.append( "    }");
+			resultJs.append( "],");
+			return;
+		}
 	}
 	
 	/**
