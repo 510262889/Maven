@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/mvc"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:util="http://www.springframework.org/schema/util"
-    xmlns:beans="http://www.springframework.org/schema/beans"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/util
@@ -14,29 +12,30 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-        
-    <!-- 返回数据解析。prefix：前缀， suffix：后缀 也就是配置views的目录-->  
-    <!-- spring访问的页面路径 -->
-    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
-        <beans:property name="prefix" value="/WEB-INF/views/" />  
-    </beans:bean>
-    <!-- 相当于注册了DefaultAnnotationHandlerMapping和AnnotationMethodHandlerAdapter两个bean -->  
-    <annotation-driven />  
-    
-    <!-- 扫描路径 -->  
-    <context:component-scan base-package="com.springMvc.bean"/>  
-    <context:component-scan base-package="com.springMvc.controller"/>  
-    <context:component-scan base-package="com.springMvc.dao"/> 
-    <context:component-scan base-package="com.common.chart"/> 
-    
-    
-    
-     <!-- 控制器拦截，用于解析返回值注解 -->
-	<mvc:interceptors>  
+
+	<!-- 返回数据解析。prefix：前缀， suffix：后缀 也就是配置views的目录 -->
+	<!-- spring访问的页面路径 -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+	</beans:bean>
+	<!-- 相当于注册了DefaultAnnotationHandlerMapping和AnnotationMethodHandlerAdapter两个bean -->
+	<annotation-driven />
+
+	<!-- 扫描路径 -->
+	<context:component-scan base-package="com.springMvc.bean" />
+	<context:component-scan base-package="com.springMvc.controller" />
+	<context:component-scan base-package="com.springMvc.dao" />
+	<context:component-scan base-package="com.common.chart" />
+
+
+
+	<!-- 控制器拦截，用于解析返回值注解 -->
+	<mvc:interceptors>
 		<beans:bean class="com.interceptor.SpringInterceptor"></beans:bean>
-	    <mvc:interceptor>  
-	        <mvc:mapping path="*.action"/>  
-	        <beans:bean class="com.interceptor.SpringInterceptor"></beans:bean>
-	    </mvc:interceptor>  
-	</mvc:interceptors>   
+		<mvc:interceptor>
+			<mvc:mapping path="*.action" />
+			<beans:bean class="com.interceptor.SpringInterceptor"></beans:bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
 </beans:beans>  

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <page title="page">
 	<toolbar>
-			<leftbutton id="button" value="新建"/>
+		<leftbutton id="button" value="新建" />
 	</toolbar>
 	<panel>
-		
+
 	</panel>
 </page>

@@ -35,7 +35,7 @@ import com.util.XmlUtil;
  */
 @Component
 public class EchartArea extends ChartHasAxis{
-	private String DEFAULT_URL = "/WEB-INF/views/component/chart/chartdemo.xml";
+	private String DEFAULT_URL = "/WEB-INF/views/component/chart/areademo.xml";
     // 图形颜色
     private List<String> colors;
     // 图形集合
